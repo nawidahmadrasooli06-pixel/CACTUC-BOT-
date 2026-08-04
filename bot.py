@@ -1,6 +1,7 @@
 import os
 import logging
 from telegram import Update, ReplyKeyboardMarkup
+from telegram.request import HTTPXRequest
 from telegram.ext import (
     ApplicationBuilder,
     ContextTypes,
@@ -70,7 +71,13 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def main():
-    app = ApplicationBuilder().token(BOT_TOKEN).build()
+    request = HTTPXRequest(
+        connect_timeout=30,
+        read_timeout=30,
+        write_timeout=30,
+        pool_timeout=30,
+    )
+    app = ApplicationBuilder().token(BOT_TOKEN).request(request).build()
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
